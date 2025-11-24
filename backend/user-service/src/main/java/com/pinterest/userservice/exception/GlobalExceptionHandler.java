@@ -31,6 +31,16 @@ public class GlobalExceptionHandler {
     return buildResponse(HttpStatus.UNAUTHORIZED, ex.getMessage());
   }
 
+  @ExceptionHandler(ResourceNotFoundException.class)
+  public ResponseEntity<Map<String, Object>> handleNotFound(ResourceNotFoundException ex) {
+    return buildResponse(HttpStatus.NOT_FOUND, ex.getMessage());
+  }
+
+  @ExceptionHandler(IllegalArgumentException.class)
+  public ResponseEntity<Map<String, Object>> handleBadRequest(IllegalArgumentException ex) {
+    return buildResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
+  }
+
   @ExceptionHandler(CircuitOpenException.class)
   public ResponseEntity<Map<String, Object>> handleCircuitOpen(CircuitOpenException ex) {
     return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)

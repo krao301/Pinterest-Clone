@@ -16,4 +16,9 @@ Implementation notes:
 ### Current endpoints
 - `POST /api/users/register` — create a new user account with email, username, password, and confirm password validation.
 - `POST /api/users/login` — authenticate with email/password and return a basic user payload.
+- `POST /api/users/{followerId}/follow/{followedId}` — create a follow relationship; rejects duplicates and self-follow.
+- `DELETE /api/users/{followerId}/follow/{followedId}` — remove a follow relationship.
+- `POST /api/users/{userId}/block/{followerId}` — mark a follower as blocked to prevent interactions.
+- `GET /api/users/{userId}/followers` — list connections following the user.
+- `GET /api/users/{userId}/following` — list connections the user follows.
 - `GET /api/users/ping` — health check for service wiring.

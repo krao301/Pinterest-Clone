@@ -19,7 +19,7 @@ Each service directory now contains a Spring Boot starter project with:
 The frontend directory includes a lightweight React + Vite scaffold with a landing layout that outlines the core product areas (register, login, create pins, boards, and search). Run `npm install` then `npm run dev` to preview it on port 5173.
 
 ### Implemented endpoints so far
-- **User Service**: Registration (`/api/users/register`), login (`/api/users/login`) with circuit-breaker feedback on repeated failures.
+- **User Service**: Registration (`/api/users/register`), login (`/api/users/login`) with circuit-breaker feedback on repeated failures, plus social graph endpoints for following/blocking and listing followers/following (`/api/users/{id}/followers`, `/api/users/{id}/following`).
 - **Content Service**: Board creation/listing/detail endpoints (`/api/boards`) and pin creation/search/detail/delete endpoints (`/api/pins`) supporting draft/visibility flags and keyword metadata.
 
 ## Getting started
