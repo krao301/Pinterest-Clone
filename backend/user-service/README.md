@@ -12,3 +12,8 @@ Implementation notes:
 - Use Spring Data JPA with MySQL; store passwords using strong hashing.
 - Provide Swagger/OpenAPI documentation for all endpoints.
 - Include unit tests with Mockito targeting at least 80% coverage.
+
+### Current endpoints
+- `POST /api/users/register` — create a new user account with email, username, password, and confirm password validation.
+- `POST /api/users/login` — authenticate with email/password and return a basic user payload.
+- `GET /api/users/ping` — health check for service wiring.
