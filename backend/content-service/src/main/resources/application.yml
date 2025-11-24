@@ -1,0 +1,36 @@
+spring:
+  # Default: embedded H2 for local development (no Docker required)
+  datasource:
+    url: jdbc:h2:mem:contentdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: 
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+
+  # Serve uploaded files from ./uploads/ when running locally
+  web:
+    resources:
+      static-locations: file:./uploads/
+
+server:
+  port: ${PORT:9002}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health,info"
+
+---
+# MySQL profile (activate with -Dspring.profiles.active=mysql)
+spring:
+  config:
+    activate:
+      on-profile: mysql
+  datasource:
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:content_db}?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
+    username: ${DB_USER:root}
+    password: ${DB_PASSWORD:root}

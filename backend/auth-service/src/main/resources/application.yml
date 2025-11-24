@@ -1,0 +1,34 @@
+spring:
+  # By default the service uses an embedded H2 database so you can run locally without Docker.
+  datasource:
+    url: jdbc:h2:mem:authdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: 
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+
+  # If you prefer MySQL, activate the 'mysql' profile and provide DB env vars
+  # Example: -Dspring.profiles.active=mysql or set DB_HOST/DB_PORT/DB_NAME
+
+server:
+  port: ${PORT:9001}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health,info"
+
+---
+# MySQL profile (activate with -Dspring.profiles.active=mysql)
+spring:
+  config:
+    activate:
+      on-profile: mysql
+  datasource:
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:auth_db}?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
+    username: ${DB_USER:root}
+    password: ${DB_PASSWORD:root}
