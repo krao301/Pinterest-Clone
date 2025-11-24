@@ -3,6 +3,7 @@ package com.pinterest.userservice.api;
 import com.pinterest.userservice.dto.LoginRequest;
 import com.pinterest.userservice.dto.RegisterRequest;
 import com.pinterest.userservice.dto.UserResponse;
+import com.pinterest.userservice.service.LoginThrottleService;
 import com.pinterest.userservice.service.UserService;
 import jakarta.validation.Valid;
 import java.util.Map;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
 
   private final UserService userService;
+  private final LoginThrottleService loginThrottleService;
 
   @PostMapping("/register")
   public ResponseEntity<UserResponse> register(@Valid @RequestBody RegisterRequest request) {
@@ -29,7 +31,8 @@ public class UserController {
 
   @PostMapping("/login")
   public ResponseEntity<Map<String, Object>> login(@Valid @RequestBody LoginRequest request) {
-    UserResponse response = userService.authenticate(request.getEmail(), request.getPassword());
+    UserResponse response = loginThrottleService.attemptLogin(
+        () -> userService.authenticate(request.getEmail(), request.getPassword()));
     return ResponseEntity.ok(Map.of(
         "message", "Login successful",
         "user", response));

@@ -31,6 +31,16 @@ public class GlobalExceptionHandler {
     return buildResponse(HttpStatus.UNAUTHORIZED, ex.getMessage());
   }
 
+  @ExceptionHandler(CircuitOpenException.class)
+  public ResponseEntity<Map<String, Object>> handleCircuitOpen(CircuitOpenException ex) {
+    return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
+        .body(Map.of(
+            "timestamp", Instant.now().toString(),
+            "status", HttpStatus.TOO_MANY_REQUESTS.value(),
+            "error", ex.getMessage(),
+            "retryAfterSeconds", ex.getRetryAfterSeconds()));
+  }
+
   @ExceptionHandler(Exception.class)
   public ResponseEntity<Map<String, Object>> handleGeneric(Exception ex) {
     return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred");
