@@ -1,13 +1,17 @@
-# Collaboration Service Scaffold
+# Collaboration Service
 
-Responsibilities:
-- Manage collaboration invitations, acceptance/decline flows, and collaborator permissions on boards.
-- Provide APIs to list pending invitations with filtering and sorting.
-- Enforce access control for shared boards and expose helper endpoints for content service to verify permissions.
-- Circuit breakers for dependency calls with the specified thresholds (3s timeout, 50% errors, open for 60s after 10 consecutive failures).
+Manages collaboration invitations, acceptance/decline flows, and collaborator permissions for shared boards.
 
-Implementation notes:
-- Use Spring Data JPA with MySQL for invitations, permissions, and audit logging.
-- Apply DTOs, ModelMapper, and Lombok to keep controllers thin.
-- Centralize exception handling and validation for request payloads (e.g., null/empty checks with friendly error messages).
-- Include Swagger/OpenAPI documentation and Mockito-based unit tests targeting ≥80% coverage.
+## Available endpoints
+- `POST /api/invitations` — create a collaboration invitation (inviterId, inviteeId, boardId, optional message).
+- `GET /api/invitations?inviteeId={id}&status={PENDING|ACCEPTED|DECLINED|IGNORED}` — list invitations for an invitee with optional status filter.
+- `POST /api/invitations/{id}/accept` — accept a pending invitation.
+- `POST /api/invitations/{id}/decline` — decline a pending invitation.
+- `POST /api/invitations/{id}/ignore` — mark a pending invitation as ignored.
+- `GET /api/collaboration/ping` — health check for routing through the gateway.
+
+## Notes
+- Validation rejects missing IDs with friendly messages and limits messages to 255 characters.
+- A centralized exception handler returns consistent error envelopes for validation errors, not-found resources, and invalid actions.
+- Backed by Spring Data JPA with MySQL; update `application.yml` before running locally.
+- Mockito-based unit tests cover invitation creation, listing, and response transitions.
