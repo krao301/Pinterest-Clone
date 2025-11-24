@@ -1,14 +1,13 @@
-# Frontend Scaffold
+# Frontend (Pinterest-style SPA)
 
-This directory is reserved for the single-page application built with React (recommended) or Angular.
+This frontend is a Vite-powered React single-page experience styled to mirror the Pinterest home feed: sticky top navigation with search, pill filters, and a masonry grid of pins with hover save controls.
 
 Responsibilities:
 - Implement registration/login flows, content creation, pin/board browsing, search, followers/following, invitations, business profiles, and logout.
 - Integrate with the gateway service for all API calls, handling OAuth/Spring Security tokens where applicable.
-- Provide responsive layouts with lazy loading for media and optimistic UI updates where possible.
+- Provide responsive layouts with lazy loading for media, optimistic UI updates, and masonry-style discovery grids.
 
-Suggested stack and setup:
-1. Initialize a React app with TypeScript, React Router, and a component library such as Bootstrap.
-2. Create feature modules for authentication, pins/boards, search, social graph, invitations, business content, and profile management.
-3. Use Axios/Fetch with interceptors for auth headers and error handling; display resilience timers/messages when circuits open.
-4. Add unit tests (Jest/React Testing Library) and strive for high coverage alongside ESLint/Prettier enforcement.
+Setup:
+1. `cd frontend && npm install`
+2. `npm run dev` for local development or `npm run build` for a production bundle.
+3. Extend `src/App.jsx` with routed views for authentication, pins/boards, search, social graph, invitations, and business experiences.
