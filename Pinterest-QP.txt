@@ -1,0 +1,525 @@
+=== Page 1 ===
+~ s.@ User Registration.an
+
+: 'Project Documentation
+Project Name: Pinterest
+Project Description:
+Pinterest is indeed a social media platform that revolves around the visual discovery and
+sharing of content. Users can create accounts to explore and save content, known as "Pins,"
+which are typically images or videos that link to external websites. Users can organize their
+Pins on virtual:boards, categorizing them based on different interests or themes. It uses
+microservice architecture' in which multiple. microservices work together to give a seamless
+experience 'to. users. The backend of the application! is built using Spring Framework whereas
+the frontend i is built using Angular/React.
+
+Major Modules: .
+
+oe Content Management '
+".@ > Search and Discovery:
+«. Connections and Social Interaction.
+
+SU etd gi wu
+
+Architecture: a nie,
+
+This.application, uses Microservice Architecture to make it a robust, scalable, and easy-to-
+
+maintain: application. Each microservice is responsible for individual tasks and different
+
+microservices. communicate with each other using REST API . The following microservices
+
+will be implemented: oe .
+
+e. User Authentication | 'Service: This microservi e will be responsible for user
+
+authentication, and managing user profile. It will: provide APIs for user registration,
+authentication, and: 'updating user profiles. a
+
+¢ Content Microservice: This microservice will manage the creation, storage, and
+
+retrieval of Pins and Boards. It also handles image and video uploads, metadata
+storage, and content versioning.
+
+mame. Bo
+
+
+=== Page 2 ===
+ENN AE NS
+
+storage, and content versioning. ee
+
+e Collaboration Microservice: This microservice Supports collaborative boards
+
+where multiple users can contribute. It also manages access control and
+permissions for shared boards.
+
+¢« Business Account Microservice: This microservice provides features for
+
+businesses, including creating business profiles and running advertising campaigns.
+
+It manages sponsored pins and analytics for business users.
+e Gateway Service: vos ;
+
+2)
+,
+
+o Uses Spring Cloud Gateway to-handle routing,
+
+load balancing, and traffic
+ation/authorization: a
+__..&. Uses Spring Cloud Consul for service discovery and registration.
+
+I
+
+° Backend: Spring Boot, Spring'Data, Spring REST, 'Spring Cloud Consut
+e Frontend: Angular/React, TypescriptJavaSeript HTMLS, CSS3, Bootstrap ©
+e Database: MySQb/NOSQL - he
+
+© Security - OAuth/Sprifig.Sectiti
+
+
+=== Page 3 ===
+Non-Functional Requirements:
+
+Performance: The application should be fast and responsive, with quick load times
+and minimal lag or delay.
+
+Scalability: The application should be able to handle large amounts of traffic and
+scale as'needed to accommodate growth.
+
+Security: The application should be secure and protect user data from unauthorized
+access, with measures such as encryption and secure authentication. Secure
+password storage using hashing. Protect against common web vulnerabilities (e.g.,
+SQL injection, xSS).
+
+Reliability: The application should be reliable and available, with minimal downtime
+or outages.
+
+Usability: The application should be easy to use and intuitive, with a clear and
+consistent user interface. I
+
+Maintainability: The application should be easy to maintain and update, with clear
+and well-organized code that is easy to understand and modify.
+
+Compatibility: The application should be compatible with a wide range of devices and
+browsers, with support for different screen sizes and resolutions.
+
+Implement caching mechanisms to improve performance.
+
+Session Management: Implement secure session management techniques to
+
+prevent unauthorized access. Consider using short-lived sessions with automatic
+timeouts.
+
+Lazy Loading: Implement lazy loading techniques for images and other content,
+ensuring faster initial page loads and smoother user experience.
+
+User Interface (Ul) and User Experience (UX) Design: Design an intuitive user interface
+that is easy to navigate and provides a seamless user experience. Prioritize
+responsiveness and clarity across all devices (desktop, mobile, tablets).
+
+Y H
+cb
+
+
+=== Page 4 ===
+Final Deliverables:
+
+e Application archive (jar ) with source code
+'e Database DDL Script
+* Complete Source code
+
+¢ Sample screenshots of important screens --
+
+Implementation Guidelines:
+
+Organize code into logical. layers (controtter, setvice, DT0, entity, etc).
+
+é
+
+Use meaningful pa Kage names s reflecting the domain,
+
+
+=== Page 5 ===
+Generat Guidelines:
+
+Error Handling:
+
+e Handle cases where the user attempts to access without authorization.
+
+e Implement a custom exception to throw user-defined messages.
+
+« Centralized exception handling mechanism should be used to capture exceptions
+
+and translate them into HTTP response.
+
+e Implement proper error handling mechanisms to catch any issues and log all the
+
+service exceptions using LoggingAspect
+
+e Handle success and error. responses appropriately with proper messages.
+
+DTOs and Mapping:
+
+e Data Transfer Objects (OTOs)
+i ol
+
+e Entities should not be exposed
+
+e Use ModelMapper to convert from entities
+
+Database Interaction: - -
+
+e Spring Data Repository should
+
+e Add appropriate, properties sp
+| |
+
+table generation strategies "
+
+[ :
+
+|
+
+be used for databa:
+ific. to the l
+
+2quest and response.
+
+'
+
+& database 'properties and
+
+
+=== Page 6 ===
+API Design:
+
+« Allthe api should be mapped with the base UR!
+
+e Set server port number of your choice.
+
+e Use appropriate HTTP methods and status code for all rest end points.
+
+¢ Use Swagger for generating the API documentation.
+
+Microservice Communicatio
+
+fe Circuit Breaker pattern should be implemented for alt the critical services with a
+timeout of 3 seconds arid ertor threshold. of 50%. The circuit breaker should open
+after 10 consecutive failures and remain. 'open for 60 seconds, Upon circuit breaker
+'opening, a fallback mechanism should return a generic message to the client.
+
+Fallback behaviors should be defined for alt ctitical operations.
+
+* Create two instances for any Microservice and implement load balancing.
+
+
+=== Page 7 ===
+7t0G text or tools
+
+_», Malidation:
+
+alidated for null or empty values
+
+atid'<attribute | name>' should be the error message
+
+. For any such
+
+s
+
+rQube-The follow ngm mum acceptable values must be met:
+
+SonarQube Minimum me
+trics Acceptable Value .
+ity A N
+A
+wt =5 f
+ge >= 80% =
+Duplications. | <=3% j
+Security.
+A
+Hotspots
+
+
+=== Page 8 ===
+Postman: Once done with implementing the requirements, use Postman or any other
+
+posting tools to test whether the REST.endpoints are working fine
+
+User Stories:
+
+User Story 01: User Registration
+As a new User, | want to be able to register for a Pinterest account so that I can start
+discovering and saving content that interests me. as
+
+Acceptance Criteria:
+
+° From the Pinterest homepage, | should see a clear and accessible option to register
+fora new account. '
+
+e Theregistration form should require me to provide a valid email address and a secure
+password.
+
+o Email Address: A text field for entering the user's email address. Email
+Address should be in a valid email format with domains like 'com' or 'org' oF
+'in'.
+
+o Username: A text field for entering a unique username that should contain
+only lowercase letters, digits, and special characters.
+
+o Password: A text field for entering a secure password. Password should
+contain lowercase, uppercase, digits, and special characters at least one
+each. The minimum length of the password should be 8 and maximum 16.
+
+o Confirm Password: A text field for re-entering the password to confirm it.
+"Passwords do not match" alert message should be shown while entering in
+the confirm password field until passwords do not match.
+
+
+=== Page 9 ===
+* tf l attempt to register with an email address that is already associated with an
+existing account, | should be notified that the email is already in use.
+
+e Upon successful registration, | should be directed to a welcome page or the Pinterest
+homepage, indicating that my account has been created.
+
+e lf there are any errors during the registration process, | should see clear error
+messages guiding me to correct the issues.
+
+US 02: Login
+
+Asa registered user, | should be able to login into the application by providing an email and
+password so that! can access.my pins.and the pins of the people | follow.
+
+Acceptance criteria: «
+
+. Validate the credentials provided by the user. Se
+. if 3 failed attempts are made within 30 seconds, the User Microservice Circuit
+should go in the open state for 1 minute. ( implement it using Resilience4j).
+
+* Display a running timer of 1 minute while the circuit is inthe open state also
+
+open state. tle oy.
+
+
+=== Page 10 ===
+térest user, | want the ability tc
+
+to'clirdte and showcase my interests anda
+
+ptance Ciiteria: :
+_ From:my Pinterest dashboard'ol
+Pin."
+
+vation interface should provide options for adding sour
+'to give credit to the original content creator.
+ave the option to,set.the Pin as public or private, controllin
+
+gits visibility to
+
+After.creating a Pin, I's
+
+appears as intended
+
+should be able to save the P
+
+finalizing. .
+
+e | should have the optio
+published.
+
+id be able to preview it before publishing to ensure it
+
+graft and return to it for further editing pefore
+
+ina
+|
+
+Gif ye
+nto edit or delete my own Pins after they have been
+
+US 04: Retrieval of Pins and boards = =
+As a Pinterest user, | want the ability to retriev ns and boards, so
+
+that | can easily access and organize my curated
+
+e and explore my saved Pi
+content.
+
+
+=== Page 11 ===
+US 04: Retrieval of Pins and boards
+
+As a Pinterest user, | want the ability to retrieve and explore my saved Pins and boards, so
+that | can easily access and organize my curated content.
+
+Acceptance Criteria:
+
+e From my Pinterest dashboard or profile, | should be able to access a section
+dedicated to viewing and managing my saved Pins and boards.
+
+e The Pins and Boards section should display a list of my saved Pins and the boards
+they are categorized under.
+
+e Each Pin should be represented by a thumbnail image and include its title,
+description, and the board it belongs to.
+
+e Clicking on a Pin should lead me to its detailed view, where | can see the full image,
+description, and attribution information.
+
+e ach board should display its cover image, title, and a summary of its Pins.
+
+e Clicking on a board should take me to the board's page, where I can view all the Pins
+within that board.
+
+¢ | should have the option to sort and filter my Pins and boards based on criteria such
+as date saved, category, or custom sorting.
+
+
+=== Page 12 ===
+: sy = ~
+
+
+=== Page 13 ===
+SEG RING OF BOATS SNOULE take Mme to (he Doard's page, where | can view all the Pins
+within that board.
+
+| should have the option to sort and filter my Pins and boards based on criteria such
+as date saved, category, or custom sorting.
+
+e The Pins.and Boards section should provide a search bar that allows me to search for
+specific Pins or boards using keywords.
+
+rearranging the order,
+renaming, or deleting them.
+
+US 05: Search pins and boards:
+
+As a Pinterest user, | want to be able to search for specific Pins and boards related to my
+interests, so that | can discover new content and save it for later.
+
+Acceptance Criteria:
+
+e From the Pinterest homepage or dashboard, | should have a prominent search bar
+
+where | can enter keywords, topics, or phrases.
+* As | type in the search bar, | should see real-time suggestions for relevant Pins,
+boards, and keywords. bo
+
+After performing a search, the results page should display a list of Pins and boards
+that match my search query.
+
+Each search result should include a thumbnail image, title, description, and the
+username of the creator.
+
+Clicking on a search result should lead me to the detailed view of the Pin or board,
+where | can learn more about it.
+
+The search results page should offer filters and' sorting options to refine the search
+results based on criteria such as relevance, date, and popularity.
+
+If there are no search results. or the query does not match any Pins or boards, the
+platform should provide helpfut 'Suggestions oF alternative search terms.
+
+
+=== Page 14 ===
+
+
+
+=== Page 15 ===
+ee ee eee Ne"
+
+Clicking on a follower or following a user
+
+me to their profile page.
+
+On the profile page of a follower or following user,
+unfollow them, depending on my current relationship with them.
+
+The platform should provide options to sort and filter the list of followers and
+
+'s profile photo or username should lead
+
+| should see options to follow or
+
+following users.
+| should have the option to block or report users from their profile pages if needed.
+
+'
+
+US 07: View Invitations
+As a Pinterest user, | want the ability to view and manage incoming invitations to collaborate
+
+on boards or connect with other' users, so that I can decide whether to accept or decline
+
+them.
+
+Acceptance Criteria: ;
+From my Pinterest dashb ard: 'or profile, I should, have a dedicated section where |
+
+can view incoming.i in itatlp ons from other users
+
+itation, the respective board should be
+
+
+=== Page 16 ===
+
+
+
+=== Page 17 ===
+ae of S oards showcasing their products, Services,
+
+'4
+
+ses should provid icuratéd collections of Pins related to speci é
+=) sonal trends, or featured products. =
+
+yrece e i aohie e 'about their latest Pins and offerings. 4
+
+ising Campaigns . *.
+iew sponsored Pins and advertising campaigns
+Ver. rélevant products, services, and promotions.
+
+As a Pinterest user; t wantt be
+
+."Acceptance Criteria: oe
+e While browsing my Pinterest feed o or exploring content,
+
+sponsored Pins clearly marked as advertisements.
+
+| should encounter
+
+
+=== Page 18 ===
+
+
+
+=== Page 19 ===
+! | bie :
+
+¢ Sponsored Pins should be visually distinguishable from regular Pins, and they
+should include a "Sponsored" label or similar indicator.
+
+¢ Clicking on a sponsored Pin should lead me to a detailed view where | can learn
+
+' more about the promoted product or service.
+
+© The detailed view of a sponsored Pin should include a link to the brand's website
+and information about the advertising campaign.
+
+¢ Sponsored Pins should provide options to save, like, and engage with the content,
+similar to regular Pins.
+
+° The Pinterest platform should offer a dedicated section where users can explore
+and discover sponsored Pins and advertising campaigns.
+
+* The advertising campaigns section should include curated collections of sponsored
+content based on user interests.ahd preferences.
+
+US 10: Log Out:
+
+e Clicking the "Log Out" option should mime:
+and direct me to a log- in page or thé Pir
+
+e Ifl attempt to,aéces
+platform should pro
