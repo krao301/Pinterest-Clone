@@ -1,4 +1,22 @@
 import React, { useMemo, useState, useEffect } from 'react';
+import {
+  createBoard as apiCreateBoard,
+  createPin as apiCreatePin,
+  fetchBoards,
+  fetchBusinessProfiles,
+  fetchPins,
+  fetchShowcases,
+  fetchSponsoredPins,
+  fetchInvitations,
+  followUser,
+  listFollowers,
+  listFollowing,
+  loginUser,
+  registerUser,
+  sendInvitation,
+  unfollowUser,
+  updateInvitation,
+} from './api';
 
 const navLinks = ['Home', 'Explore', 'Create'];
 
@@ -260,6 +278,23 @@ const validateUsername = (value) => /^[a-z0-9._-]+$/.test(value || '');
 const validatePassword = (value) =>
   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,16}$/.test(value || '');
 
+const mapPinsToCards = (apiPins = [], apiBoards = []) => {
+  const boardLookup = Object.fromEntries(apiBoards.map((b) => [b.id, b.title]));
+  return apiPins.map((pin) => ({
+    id: pin.id,
+    title: pin.title,
+    author: pin.boardName || 'Pinned',
+    avatar:
+      'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=100&q=80',
+    image: pin.mediaUrl,
+    link: pin.sourceUrl || '',
+    tag: boardLookup[pin.boardId] || 'Saved',
+    keywords: pin.keywords || [],
+    boardId: pin.boardId,
+    visibility: pin.visible ? 'PUBLIC' : 'PRIVATE',
+  }));
+};
+
 export default function App() {
   const [nav, setNav] = useState('Home');
   const [pins, setPins] = useState(initialPins);
@@ -269,15 +304,47 @@ export default function App() {
   const [authMode, setAuthMode] = useState('login');
   const [authErrors, setAuthErrors] = useState({});
   const [authForm, setAuthForm] = useState({ email: '', username: '', password: '', confirm: '' });
-  const [activeUser, setActiveUser] = useState({ email: 'mara@example.com', username: 'marachen' });
+  const [activeUser, setActiveUser] = useState(null);
   const [draftPin, setDraftPin] = useState({ title: '', link: '', tag: pinFilters[0], boardId: starterBoards[0].id, visibility: 'PUBLIC' });
   const [draftBoard, setDraftBoard] = useState({ title: '', description: '', visibility: 'PUBLIC' });
-  const [followers, setFollowers] = useState(followersSeed);
-  const [following, setFollowing] = useState(followingSeed);
-  const [invitations, setInvitations] = useState(invitationsSeed);
+  const [followers, setFollowers] = useState([]);
+  const [following, setFollowing] = useState([]);
+  const [invitations, setInvitations] = useState([]);
   const [saves, setSaves] = useState([]);
   const [loginFailures, setLoginFailures] = useState([]);
   const [circuitOpenUntil, setCircuitOpenUntil] = useState(null);
+  const [businesses, setBusinesses] = useState([]);
+  const [showcases, setShowcases] = useState([]);
+  const [sponsored, setSponsored] = useState([]);
+  const [statusMessage, setStatusMessage] = useState('');
+
+  useEffect(() => {
+    const loadStaticData = async () => {
+      try {
+        const [fetchedBoards, fetchedPins, biz, showcaseList, sponsoredList] = await Promise.all([
+          fetchBoards(),
+          fetchPins(),
+          fetchBusinessProfiles(),
+          fetchShowcases(),
+          fetchSponsoredPins(),
+        ]);
+        setBoards(fetchedBoards.length ? fetchedBoards : starterBoards);
+        setPins(fetchedPins.length ? mapPinsToCards(fetchedPins, fetchedBoards) : initialPins);
+        setBusinesses(biz);
+        setShowcases(showcaseList);
+        setSponsored(sponsoredList);
+        setDraftPin((prev) => ({ ...prev, boardId: (fetchedBoards[0] || starterBoards[0]).id }));
+      } catch (error) {
+        console.error('Falling back to starter content', error);
+        setBoards(starterBoards);
+        setPins(initialPins);
+        setBusinesses(businessProfiles);
+        setShowcases([]);
+        setSponsored([]);
+      }
+    };
+    loadStaticData();
+  }, []);
 
   useEffect(() => {
     const now = Date.now();
@@ -301,12 +368,40 @@ export default function App() {
     return () => clearInterval(timer);
   }, [circuitOpenUntil]);
 
+  useEffect(() => {
+    if (!activeUser?.id) {
+      setFollowers(followersSeed);
+      setFollowing(followingSeed);
+      setInvitations(invitationsSeed);
+      return;
+    }
+    const loadSocial = async () => {
+      try {
+        const [fetchedFollowers, fetchedFollowing, fetchedInvites] = await Promise.all([
+          listFollowers(activeUser.id),
+          listFollowing(activeUser.id),
+          fetchInvitations(activeUser.id),
+        ]);
+        setFollowers(fetchedFollowers);
+        setFollowing(fetchedFollowing);
+        setInvitations(fetchedInvites);
+      } catch (error) {
+        console.warn('Using seed social data because API failed', error);
+        setFollowers(followersSeed);
+        setFollowing(followingSeed);
+        setInvitations(invitationsSeed);
+      }
+    };
+    loadSocial();
+  }, [activeUser?.id]);
+
   const filteredPins = useMemo(() => {
     return pins.filter((pin) => {
       if (selectedFilter && pin.tag !== selectedFilter) return false;
       if (pin.visibility === 'PRIVATE' && !saves.includes(pin.id)) return false;
       if (!search) return true;
-      const haystack = `${pin.title} ${pin.tag} ${pin.keywords.join(' ')} ${pin.link}`.toLowerCase();
+      const keywords = Array.isArray(pin.keywords) ? pin.keywords.join(' ') : '';
+      const haystack = `${pin.title} ${pin.tag} ${keywords} ${pin.link || ''}`.toLowerCase();
       return haystack.includes(search.toLowerCase());
     });
   }, [pins, search, selectedFilter, saves]);
@@ -347,7 +442,7 @@ export default function App() {
     return Object.keys(nextErrors).length === 0;
   };
 
-  const submitAuth = (evt) => {
+  const submitAuth = async (evt) => {
     evt.preventDefault();
     if (circuitOpenUntil && Date.now() < circuitOpenUntil) {
       setAuthErrors({ circuit: 'Circuit open — please wait before another attempt.' });
@@ -359,58 +454,142 @@ export default function App() {
       return;
     }
     setAuthErrors({});
-    setActiveUser({ email: authForm.email, username: authForm.username || authForm.email.split('@')[0] });
-    setLoginFailures([]);
-    setCircuitOpenUntil(null);
+    setStatusMessage('');
+    try {
+      if (authMode === 'register') {
+        const registered = await registerUser({
+          email: authForm.email,
+          username: authForm.username,
+          password: authForm.password,
+        });
+        setActiveUser(registered);
+        setStatusMessage('Registration successful.');
+      } else {
+        const result = await loginUser({ email: authForm.email, password: authForm.password });
+        setActiveUser(result.user);
+        setStatusMessage(result.message);
+      }
+      setLoginFailures([]);
+      setCircuitOpenUntil(null);
+    } catch (error) {
+      if (error.status === 429 && error.payload?.retryAfterSeconds) {
+        const lockUntil = Date.now() + error.payload.retryAfterSeconds * 1000;
+        setCircuitOpenUntil(lockUntil);
+        setAuthErrors({ circuit: error.payload.error });
+      } else {
+        setAuthErrors({ circuit: error.message });
+      }
+      if (authMode === 'login') setLoginFailures((prev) => [...prev, Date.now()]);
+    }
   };
 
-  const createBoard = (evt) => {
+  const createBoard = async (evt) => {
     evt.preventDefault();
     if (!draftBoard.title.trim()) return;
-    const newBoard = {
-      id: Date.now(),
-      title: draftBoard.title.trim(),
-      description: draftBoard.description.trim(),
-      visibility: draftBoard.visibility,
-    };
-    setBoards((prev) => [newBoard, ...prev]);
-    setDraftBoard({ title: '', description: '', visibility: 'PUBLIC' });
+    try {
+      const created = await apiCreateBoard({
+        title: draftBoard.title.trim(),
+        description: draftBoard.description.trim(),
+        visibility: draftBoard.visibility,
+      });
+      setBoards((prev) => [created, ...prev]);
+      setDraftBoard({ title: '', description: '', visibility: 'PUBLIC' });
+      setStatusMessage('Board created');
+    } catch (error) {
+      console.error(error);
+      setStatusMessage('Unable to create board. Falling back locally.');
+      const newBoard = {
+        id: Date.now(),
+        title: draftBoard.title.trim(),
+        description: draftBoard.description.trim(),
+        visibility: draftBoard.visibility,
+      };
+      setBoards((prev) => [newBoard, ...prev]);
+    }
   };
 
-  const createPin = (evt) => {
+  const createPin = async (evt) => {
     evt.preventDefault();
     if (!draftPin.title.trim() || !draftPin.link.trim()) return;
-    const newPin = {
-      id: Date.now(),
-      title: draftPin.title.trim(),
-      author: activeUser.username || 'You',
-      avatar:
-        'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=100&q=80',
-      image:
-        'https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?auto=format&fit=crop&w=900&q=80',
-      link: draftPin.link.trim(),
-      tag: draftPin.tag,
-      keywords: draftPin.title.split(' '),
-      boardId: Number(draftPin.boardId),
-      visibility: draftPin.visibility,
-    };
-    setPins((prev) => [newPin, ...prev]);
-    setDraftPin({ title: '', link: '', tag: pinFilters[0], boardId: starterBoards[0].id, visibility: 'PUBLIC' });
+    try {
+      const created = await apiCreatePin({
+        title: draftPin.title.trim(),
+        description: draftPin.title.trim(),
+        mediaUrl: draftPin.link.trim(),
+        sourceUrl: draftPin.link.trim(),
+        keywords: draftPin.title.split(' '),
+        boardId: Number(draftPin.boardId),
+        draft: false,
+        visible: draftPin.visibility !== 'PRIVATE',
+      });
+      setPins((prev) => [{
+        ...created,
+        author: activeUser?.username || 'You',
+        avatar: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=100&q=80',
+        image: created.mediaUrl,
+        tag: draftPin.tag,
+        keywords: created.keywords || [],
+        link: created.sourceUrl,
+        visibility: created.visible ? 'PUBLIC' : 'PRIVATE',
+      }, ...prev]);
+      setDraftPin({ title: '', link: '', tag: pinFilters[0], boardId: draftPin.boardId, visibility: 'PUBLIC' });
+      setStatusMessage('Pin saved');
+    } catch (error) {
+      console.error(error);
+      setStatusMessage('Unable to create pin. Falling back locally.');
+      const newPin = {
+        id: Date.now(),
+        title: draftPin.title.trim(),
+        author: activeUser?.username || 'You',
+        avatar:
+          'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=100&q=80',
+        image:
+          'https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?auto=format&fit=crop&w=900&q=80',
+        link: draftPin.link.trim(),
+        tag: draftPin.tag,
+        keywords: draftPin.title.split(' '),
+        boardId: Number(draftPin.boardId),
+        visibility: draftPin.visibility,
+      };
+      setPins((prev) => [newPin, ...prev]);
+    }
   };
 
   const toggleSave = (pinId) => {
     setSaves((prev) => (prev.includes(pinId) ? prev.filter((id) => id !== pinId) : [...prev, pinId]));
   };
 
-  const respondInvite = (id, status) => {
-    setInvitations((prev) => prev.map((inv) => (inv.id === id ? { ...inv, status } : inv)));
+  const respondInvite = async (id, status) => {
+    try {
+      await updateInvitation(id, status.toLowerCase());
+      const updated = await fetchInvitations(activeUser?.id);
+      setInvitations(updated);
+    } catch (error) {
+      console.warn('Falling back locally', error);
+      setInvitations((prev) => prev.map((inv) => (inv.id === id ? { ...inv, status } : inv)));
+    }
   };
 
-  const toggleFollow = (userId, name, avatar) => {
-    if (following.find((f) => f.id === userId)) {
-      setFollowing((prev) => prev.filter((f) => f.id !== userId));
-    } else {
+  const toggleFollow = async (userId, name, avatar) => {
+    if (!activeUser?.id) {
       setFollowing((prev) => [...prev, { id: userId, name, avatar }]);
+      return;
+    }
+    try {
+      if (following.find((f) => f.id === userId)) {
+        await unfollowUser(activeUser.id, userId);
+        setFollowing((prev) => prev.filter((f) => f.id !== userId));
+      } else {
+        await followUser(activeUser.id, userId);
+        setFollowing((prev) => [...prev, { id: userId, name, avatar }]);
+      }
+    } catch (error) {
+      console.warn('Follow fallback', error);
+      if (following.find((f) => f.id === userId)) {
+        setFollowing((prev) => prev.filter((f) => f.id !== userId));
+      } else {
+        setFollowing((prev) => [...prev, { id: userId, name, avatar }]);
+      }
     }
   };
 
@@ -550,6 +729,7 @@ export default function App() {
               <div className="timer">Login circuit open · wait {circuitSecondsLeft}s</div>
             )}
             <button type="submit" className="primary">{authMode === 'login' ? 'Log in' : 'Register'}</button>
+            {statusMessage && <div className="success">{statusMessage}</div>}
           </form>
         </div>
 
@@ -755,7 +935,7 @@ export default function App() {
             <span className="muted">Explore brands</span>
           </div>
           <ul className="business">
-            {businessProfiles.map((biz) => (
+            {(businesses.length ? businesses : businessProfiles).map((biz) => (
               <li key={biz.id}>
                 <div className="person">
                   <img src={biz.logo} alt={biz.name} />
@@ -783,10 +963,10 @@ export default function App() {
             <span className="muted">Advertising</span>
           </div>
           <div className="sponsored">
-            {sponsoredPins.map((ad) => (
+            {(sponsored.length ? sponsored : sponsoredPins).map((ad) => (
               <article key={ad.id} className="sponsored-card">
                 <span className="sponsored-label">Sponsored</span>
-                <img src={ad.image} alt={ad.title} />
+                <img src={ad.image || ad.mediaUrl} alt={ad.title} />
                 <h4>{ad.title}</h4>
                 <p className="muted">{ad.brand}</p>
                 <a className="pill" href={ad.url} target="_blank" rel="noreferrer">

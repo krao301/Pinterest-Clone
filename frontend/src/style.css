@@ -275,6 +275,11 @@ select {
   font-size: 13px;
 }
 
+.success {
+  color: #0f5132;
+  font-size: 13px;
+}
+
 .timer {
   color: var(--accent-2);
   font-weight: 700;
