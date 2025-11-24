@@ -11,12 +11,17 @@ This repository contains a clean scaffold for a Pinterest-style platform built w
   - `business-service/`: Supports business accounts, showcases, and sponsored pins.
 - `frontend/`: Placeholder for the React or Angular single-page application.
 
-Each service directory currently includes a `README.md` that outlines the responsibilities, expected Spring Boot stack, and recommended configuration (Consul, Resilience4j, Swagger, ModelMapper, Lombok, MySQL). No code has been generated yet, keeping the repository ready for an implementation that can cleanly map to your deployment preferences.
+Each service directory now contains a Spring Boot starter project with:
+- A `pom.xml` aligned to Spring Boot 3.2.x, Resilience4j, Feign, Lombok, ModelMapper, and MySQL (where applicable).
+- A minimal `PingController` you can hit through the gateway to confirm wiring.
+- Default ports (gateway 8080, user 8081, content 8082, collaboration 8083, business 8084) and circuit-breaker defaults in `application.yml`.
+
+The frontend directory includes a lightweight React + Vite scaffold with a landing layout that outlines the core product areas (register, login, create pins, boards, and search). Run `npm install` then `npm run dev` to preview it on port 5173.
 
 ## Getting started
-1. Initialize each backend service with your preferred build tool (Maven or Gradle) and apply the notes in the service-specific README files.
+1. From each backend service directory, run `mvn spring-boot:run` to start the microservices locally (adjust database properties as needed before enabling JPA-backed features).
 2. Stand up a Consul instance and MySQL database to satisfy service discovery and persistence needs.
-3. Scaffold the frontend SPA within `frontend/`, wiring it to the gateway for API access.
+3. From `frontend/`, run `npm install` followed by `npm run dev` to launch the SPA. Configure API URLs to pass through the gateway for consolidated routing and resilience.
 
 ## Notes
 - The zip file at the repository root was intentionally ignored per the request.
