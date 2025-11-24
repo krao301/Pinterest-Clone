@@ -1,0 +1,56 @@
+spring:
+  application:
+    name: gateway-service
+  cloud:
+    gateway:
+      default-filters:
+        - name: CircuitBreaker
+          args:
+            name: gatewayCircuit
+            fallbackUri: forward:/api/gateway/fallback
+      routes:
+        - id: user-service
+          uri: http://localhost:8081
+          predicates:
+            - Path=/api/users/**
+        - id: content-pins
+          uri: http://localhost:8082
+          predicates:
+            - Path=/api/pins/**
+        - id: content-boards
+          uri: http://localhost:8082
+          predicates:
+            - Path=/api/boards/**
+        - id: collaboration-service
+          uri: http://localhost:8083
+          predicates:
+            - Path=/api/invitations/**
+        - id: business-service
+          uri: http://localhost:8084
+          predicates:
+            - Path=/api/business/**
+server:
+  port: 8080
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+resilience4j:
+  circuitbreaker:
+    instances:
+      gatewayCircuit:
+        register-health-indicator: true
+        sliding-window-size: 10
+        sliding-window-type: count_based
+        failure-rate-threshold: 50
+        wait-duration-in-open-state: 60s
+        minimum-number-of-calls: 5
+        permitted-number-of-calls-in-half-open-state: 3
+        automatic-transition-from-open-to-half-open-enabled: true
+        slow-call-duration-threshold: 3s
+  timelimiter:
+    instances:
+      gatewayTimeout:
+        timeout-duration: 3s
+        cancel-running-future: true
