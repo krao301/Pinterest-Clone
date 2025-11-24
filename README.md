@@ -9,14 +9,14 @@ This repository contains a clean scaffold for a Pinterest-style platform built w
   - `content-service/`: Manages pins, boards, uploads, and search features.
   - `collaboration-service/`: Covers shared boards, invitations, and related permissions.
   - `business-service/`: Supports business accounts, showcases, and sponsored pins.
-- `frontend/`: Placeholder for the React or Angular single-page application.
+- `frontend/`: Pinterest-style React single-page application powered by Vite.
 
 Each service directory now contains a Spring Boot starter project with:
 - A `pom.xml` aligned to Spring Boot 3.2.x, Resilience4j, Feign, Lombok, ModelMapper, and MySQL (where applicable).
 - A minimal `PingController` you can hit through the gateway to confirm wiring.
 - Default ports (gateway 8080, user 8081, content 8082, collaboration 8083, business 8084) and circuit-breaker defaults in `application.yml`.
 
-The frontend directory includes a lightweight React + Vite scaffold with a landing layout that outlines the core product areas (register, login, create pins, boards, and search). Run `npm install` then `npm run dev` to preview it on port 5173.
+The frontend includes a Pinterest-accurate landing/dashboard experience featuring registration/login with validation, pin and board creation, search across pins/boards, follower/following panels, invitations, business profile exploration, and clearly marked sponsored pins. Run `npm install` then `npm run dev` to preview it on port 5173.
 
 ### Implemented endpoints so far
 - **User Service**: Registration (`/api/users/register`), login (`/api/users/login`) with circuit-breaker feedback on repeated failures, plus social graph endpoints for following/blocking and listing followers/following (`/api/users/{id}/followers`, `/api/users/{id}/following`).
