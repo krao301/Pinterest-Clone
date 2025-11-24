@@ -1,6 +1,19 @@
 spring:
   application:
     name: business-service
+  datasource:
+    url: jdbc:mysql://localhost:3306/pinterest_business
+    username: pinterest
+    password: pinterest
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
 server:
   port: 8084
 management:
